@@ -88,7 +88,7 @@ async def add_comment(message: types.Message, state: FSMContext):
 
 @router.message(Command(commands='members'))
 async def get_members(message: types.Message):
-    all_member_query = 'select first_name, last_name, comment from account'
+    all_member_query = 'select first_name, last_name, will_be, comment from account'
     cur.execute(all_member_query)
     members = cur.fetchall()
     formatted_members = "\n".join([f"{member[0]} {member[1]}" for member in members])
