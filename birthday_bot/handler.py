@@ -86,6 +86,7 @@ async def add_comment(message: types.Message, state: FSMContext):
     except Exception as e:
         conn.rollback()
         await message.answer("Нене, зарегистрироваться можно только 1 раз")
+        raise e
     else:
         await message.answer("Регистрация завершена, теперь можно посмотреть детали")
 
@@ -153,3 +154,4 @@ async def get_wish(message: types.Message, state: FSMContext):
         except Exception as e:
             await message.answer("Упс, кажется, сервак упал")
             conn.rollback()
+            raise e
