@@ -1,0 +1,30 @@
+version: "3.10"
+services:
+  app:
+    build:
+      context: .
+    env_file: .env
+    depends_on:
+      - db
+    volumes:
+      - ./db_bot:/db_bot
+    networks:
+      - backend
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=db_bot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+     driver: bridge
