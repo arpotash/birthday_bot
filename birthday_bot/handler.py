@@ -82,6 +82,8 @@ async def add_comment(message: types.Message, state: FSMContext):
     insert_account_query = f'insert into account (first_name, last_name, will_be, comment) values (%s, %s, %s, %s)'
     cur.execute(insert_account_query, values)
     conn.commit()
+    await message.answer("Регистрация завершена, теперь можно посмотреть детали")
+
 
 
 @router.message(Command(commands='members'))
