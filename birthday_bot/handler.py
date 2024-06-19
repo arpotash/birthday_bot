@@ -80,8 +80,11 @@ async def add_comment(message: types.Message, state: FSMContext):
     data = await state.get_data()
     values = tuple(data for data in data.values())
     insert_account_query = f'insert into account (first_name, last_name, will_be, comment) values (%s, %s, %s, %s)'
-    cur.execute(insert_account_query, values)
-    conn.commit()
+    try:
+        cur.execute(insert_account_query, values)
+        conn.commit()
+    except Exception as e:
+        await message.answer("Нене, зарегистрироваться можно только 1 раз")
     await message.answer("Регистрация завершена, теперь можно посмотреть детали")
 
 
