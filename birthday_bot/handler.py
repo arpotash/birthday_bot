@@ -84,6 +84,7 @@ async def add_comment(message: types.Message, state: FSMContext):
         cur.execute(insert_account_query, values)
         conn.commit()
     except Exception as e:
+        conn.rollback()
         await message.answer("Нене, зарегистрироваться можно только 1 раз")
     else:
         await message.answer("Регистрация завершена, теперь можно посмотреть детали")
@@ -146,5 +147,9 @@ async def get_wish(message: types.Message, state: FSMContext):
     if data:
         values = tuple(data for data in data.values())
         insert_account_query = f'insert into wish (wish) values (%s)'
-        cur.execute(insert_account_query, values)
-        conn.commit()
+        try:
+            cur.execute(insert_account_query, values)
+            conn.commit()
+        except Exception as e:
+            await message.answer("Упс, кажется, сервак упал")
+            conn.rollback()
