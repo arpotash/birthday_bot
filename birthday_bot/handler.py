@@ -85,7 +85,8 @@ async def add_comment(message: types.Message, state: FSMContext):
         conn.commit()
     except Exception as e:
         await message.answer("Нене, зарегистрироваться можно только 1 раз")
-    await message.answer("Регистрация завершена, теперь можно посмотреть детали")
+    else:
+        await message.answer("Регистрация завершена, теперь можно посмотреть детали")
 
 
 
