@@ -10,7 +10,6 @@ from db import db_initialize
 async def on_startup():
     await db_initialize()
 
-error_occurred = False
 
 async def set_main_menu(bot: Bot):
     main_menu_commands = [
@@ -23,7 +22,7 @@ async def set_main_menu(bot: Bot):
 
 
 async def main():
-    api_token = os.getenv('API_TOKEN', '6937295727:AAH9iEiJwHeAiix7w_EJ2Zb1LXRuZywbJb4')
+    api_token = os.getenv('API_TOKEN')
     bot = Bot(token=api_token)
     dp = Dispatcher()
     await set_main_menu(bot)
