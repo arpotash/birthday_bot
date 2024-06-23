@@ -3,7 +3,8 @@ import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
-from handler import router
+from router.offer import offer_router
+from router.register import auth_router
 from db import db_initialize
 
 
@@ -22,11 +23,12 @@ async def set_main_menu(bot: Bot):
 
 
 async def main():
-    api_token = os.getenv('API_TOKEN')
+    api_token = os.getenv('API_TOKEN', "6937295727:AAH9iEiJwHeAiix7w_EJ2Zb1LXRuZywbJb4")
     bot = Bot(token=api_token)
     dp = Dispatcher()
     await set_main_menu(bot)
-    dp.include_router(router)
+    dp.include_router(offer_router)
+    dp.include_router(auth_router)
     await dp.start_polling(bot, on_startup=on_startup)
 
 # Start the bot and send broadcast message
