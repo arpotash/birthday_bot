@@ -71,6 +71,7 @@ async def get_wish(message: types.Message, state: FSMContext):
         try:
             cur.execute(insert_account_query, values)
             conn.commit()
+            await message.answer("Пожелания учтены, спасибо!")
         except Exception as e:
             await message.answer("Упс, кажется, сервак упал")
             conn.rollback()
