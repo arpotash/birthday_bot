@@ -23,7 +23,7 @@ async def register(message: types.Message, state: FSMContext):
         f'Если ты получил ссылку на бота и читаешь это сообщение, значит ты точно знаешь одного из этих людей: '
         f'Поташов Артём, Малахов Павел, Романов Алексей.\n\n'
         f'Не буду лить много воды, все четко и по порядку.\n\n'
-        f'Дата: 12-13 июля\n\n'
+        f'Дата: 13-14 июля\n\n'
         f'Дресс-код: [Укажите дресс-код]\n\n'
         f'Пожелания по подаркам: виш-листа в этот раз не будет, идеальный подарок - деньги :)\n\n'
         f'Как добраться: информация есть в разделе "Локации"\n\n'
@@ -77,6 +77,7 @@ async def process_option(callback_query: types.CallbackQuery, state: FSMContext)
     if account and account[0] == data.get("will_be"):
         await callback_query.message.answer("Может другой ответ выберешь, этот уже был!")
         await state.clear()
+        return
     if account and account[0] != data.get("will_be"):
         update_account_query = (
             'UPDATE account SET will_be = %s WHERE first_name = %s AND last_name = %s'
@@ -85,6 +86,7 @@ async def process_option(callback_query: types.CallbackQuery, state: FSMContext)
         conn.commit()
         await callback_query.message.answer("Ок, это твой выбор, я с ним согласен!")
         await state.clear()
+        return
     else:
         values = tuple(data for data in data.values())
         insert_account_query = f'insert into account (first_name, last_name, will_be, comment) values (%s, %s, %s, %s)'
