@@ -24,7 +24,8 @@ async def get_members(message: types.Message):
 
 
 @offer_router.message(Command(commands="location"))
-async def get_location(message: types.Message):
+async def get_location(message: types.Message, state: FSMContext):
+    await state.clear()
     media = []
     photo_paths = [
         'photo_6.png',
