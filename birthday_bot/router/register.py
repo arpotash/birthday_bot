@@ -5,6 +5,8 @@ from db import cur, conn
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 
+from router.offer import get_location
+
 auth_router = Router()
 
 class RegisterAccount(StatesGroup):
@@ -63,25 +65,36 @@ async def process_option(callback_query: types.CallbackQuery, state: FSMContext)
     options = ['Буду', 'Точно не знаю', 'Не смогу']
     selected_option = options[selected_option_index]
     await state.update_data(will_be=selected_option)
-    await callback_query.message.answer("Если будешь +1, пиши +1, если есть другие комментарии, тоже пиши")
-    await state.set_state(RegisterAccount.comment)
-
-
-@auth_router.message(RegisterAccount.comment, F.text)
-async def add_comment(message: types.Message, state: FSMContext):
-    try:
-        await state.update_data(comment=message.text)
-        data = await state.get_data()
+    await state.update_data(comment=callback_query.message.text)
+    data = await state.get_data()
+    select_account_query = (
+        f'select will_be '
+        f'from account '
+        f'where first_name = %s and last_name = %s'
+    )
+    cur.execute(select_account_query, (data.get("first_name"), data.get("last_name")))
+    account = cur.fetchone()
+    if account and account[0] == data.get("will_be"):
+        await callback_query.message.answer("Может другой ответ выберешь, этот уже был!")
+        await state.clear()
+    if account and account[0] != data.get("will_be"):
+        update_account_query = (
+            'UPDATE account SET will_be = %s WHERE first_name = %s AND last_name = %s'
+        )
+        cur.execute(update_account_query, (data.get("will_be"), data.get("first_name"), data.get("last_name")))
+        conn.commit()
+        await callback_query.message.answer("Ок, это твой выбор, я с ним согласен!")
+        await state.clear()
+    else:
         values = tuple(data for data in data.values())
-
         insert_account_query = f'insert into account (first_name, last_name, will_be, comment) values (%s, %s, %s, %s)'
 
         cur.execute(insert_account_query, values)
         conn.commit()
-    except Exception as e:
-        conn.rollback()
-        await message.answer("Нене, зарегистрироваться можно только 1 раз")
-    else:
-        await message.answer("Регистрация завершена, теперь можно посмотреть детали")
-    finally:
+
+        await callback_query.message.answer(
+            "Регистрация завершена, теперь можно посмотреть детали, "
+            "если есть какие-либо пожелания, можешь написать одному из организаторов лично"
+        )
         await state.clear()
+    await get_location(callback_query.message)

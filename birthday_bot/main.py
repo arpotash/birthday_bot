@@ -15,15 +15,13 @@ async def on_startup():
 async def set_main_menu(bot: Bot):
     main_menu_commands = [
         BotCommand(command='/start', description='Прочитать приглашение'),
-        BotCommand(command='/members', description='Посмотреть список участников'),
         BotCommand(command='/location', description='Локация проведения'),
-        BotCommand(command='/wishes', description='Пожелания')
     ]
     await bot.set_my_commands(main_menu_commands)
 
 
 async def main():
-    api_token = os.getenv('API_TOKEN', "6937295727:AAH9iEiJwHeAiix7w_EJ2Zb1LXRuZywbJb4")
+    api_token = os.getenv('API_TOKEN')
     bot = Bot(token=api_token)
     dp = Dispatcher()
     await set_main_menu(bot)
