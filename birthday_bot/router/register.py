@@ -18,6 +18,7 @@ class RegisterAccount(StatesGroup):
 
 @auth_router.message(StateFilter(None), CommandStart())
 async def register(message: types.Message, state: FSMContext):
+    await state.clear()
     await message.answer(
         f'Привет!\n\n'
         f'Если ты получил ссылку на бота и читаешь это сообщение, значит ты точно знаешь одного из этих людей: '
