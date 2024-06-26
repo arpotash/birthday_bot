@@ -36,6 +36,9 @@ async def register(message: types.Message, state: FSMContext):
 
 @auth_router.message(RegisterAccount.first_name, F.text)
 async def add_first_name(message: types.Message, state: FSMContext):
+    if message.text == "/start":
+        await state.clear()
+        await register(message, state)
     await state.update_data(first_name=message.text)
     await message.answer("Теперь фамилию")
     await state.set_state(RegisterAccount.last_name)
@@ -43,6 +46,9 @@ async def add_first_name(message: types.Message, state: FSMContext):
 
 @auth_router.message(RegisterAccount.last_name, F.text)
 async def add_last_name(message: types.Message, state: FSMContext):
+    if message.text == "/start":
+        await state.clear()
+        await register(message, state)
     await state.update_data(last_name=message.text)
     options = ['Буду', 'Точно не знаю', 'Не смогу']
     keyboard_markup = [
@@ -61,6 +67,9 @@ async def add_last_name(message: types.Message, state: FSMContext):
 @auth_router.message(RegisterAccount.will_be, F.text)
 @auth_router.callback_query(lambda query: query.data.startswith('option_'))
 async def process_option(callback_query: types.CallbackQuery, state: FSMContext):
+    if callback_query.message.text == "/start":
+        await state.clear()
+        await register(callback_query.message, state)
     selected_option_index = int(callback_query.data.split('_')[1])
     options = ['Буду', 'Точно не знаю', 'Не смогу']
     selected_option = options[selected_option_index]
