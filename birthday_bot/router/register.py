@@ -38,7 +38,8 @@ async def register(message: types.Message, state: FSMContext):
 async def add_first_name(message: types.Message, state: FSMContext):
     if message.text == "/start":
         await state.clear()
-        await register(message, state)
+        return await register(message, state)
+
     await state.update_data(first_name=message.text)
     await message.answer("Теперь фамилию")
     await state.set_state(RegisterAccount.last_name)
@@ -48,7 +49,8 @@ async def add_first_name(message: types.Message, state: FSMContext):
 async def add_last_name(message: types.Message, state: FSMContext):
     if message.text == "/start":
         await state.clear()
-        await register(message, state)
+        return await register(message, state)
+
     await state.update_data(last_name=message.text)
     options = ['Буду', 'Точно не знаю', 'Не смогу']
     keyboard_markup = [
@@ -69,7 +71,8 @@ async def add_last_name(message: types.Message, state: FSMContext):
 async def process_option(callback_query: types.CallbackQuery, state: FSMContext):
     if callback_query.message.text == "/start":
         await state.clear()
-        await register(callback_query.message, state)
+        return await register(callback_query.message, state)
+
     selected_option_index = int(callback_query.data.split('_')[1])
     options = ['Буду', 'Точно не знаю', 'Не смогу']
     selected_option = options[selected_option_index]
@@ -83,10 +86,12 @@ async def process_option(callback_query: types.CallbackQuery, state: FSMContext)
     )
     cur.execute(select_account_query, (data.get("first_name"), data.get("last_name")))
     account = cur.fetchone()
+
     if account and account[0] == data.get("will_be"):
         await callback_query.message.answer("Может другой ответ выберешь, этот уже был!")
         await state.clear()
         return
+
     if account and account[0] != data.get("will_be"):
         update_account_query = (
             'UPDATE account SET will_be = %s WHERE first_name = %s AND last_name = %s'
