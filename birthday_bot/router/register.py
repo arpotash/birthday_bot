@@ -89,7 +89,6 @@ async def process_option(callback_query: types.CallbackQuery, state: FSMContext)
 
     if account and account[0] == data.get("will_be"):
         await callback_query.message.answer("Может другой ответ выберешь, этот уже был!")
-        return await state.clear()
 
     if account and account[0] != data.get("will_be"):
         update_account_query = (
@@ -98,7 +97,6 @@ async def process_option(callback_query: types.CallbackQuery, state: FSMContext)
         cur.execute(update_account_query, (data.get("will_be"), data.get("first_name"), data.get("last_name")))
         conn.commit()
         await callback_query.message.answer("Ок, это твой выбор, я с ним согласен!")
-        return state.clear()
     else:
         values = tuple(data for data in data.values())
         insert_account_query = f'insert into account (first_name, last_name, will_be, comment) values (%s, %s, %s, %s)'
