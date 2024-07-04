@@ -1,14 +1,3 @@
-from aiogram import Router, F
-from aiogram.filters import CommandStart, Command, StateFilter
-from aiogram import types
-from aiogram.fsm.context import FSMContext
-
-from db import cur, conn
-from aiogram.fsm.state import State, StatesGroup
-
-from router.register import register
-
-
 # @offer_router.message(StateFilter(None), Command(commands="wishes"))
 # async def create_wish(message: types.Message, state: FSMContext):
 #     await message.answer("Если есть любые пожелания, пиши их здесь", reply_markup=types.ReplyKeyboardRemove())
