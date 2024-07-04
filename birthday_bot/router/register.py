@@ -5,8 +5,6 @@ from db import cur, conn
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 
-from router.offer import get_location
-
 
 auth_router = Router()
 
@@ -16,17 +14,13 @@ class RegisterAccount(StatesGroup):
     will_be = State()
     comment = State()
 
-
-offer_router = Router()
-
-
 class CreateWish(StatesGroup):
     wish = State()
 
 class AdminAccount(StatesGroup):
     password = State()
 
-@offer_router.message(Command(commands='members'))
+@auth_router.message(Command(commands='members'))
 async def get_members_count(message: types.Message, state: FSMContext):
     count_member_query = 'select count(*) from account'
     cur.execute(count_member_query)
@@ -38,7 +32,7 @@ async def get_members_count(message: types.Message, state: FSMContext):
 
 
 
-@offer_router.message(AdminAccount.password, F.text)
+@auth_router.message(AdminAccount.password, F.text)
 async def get_members(message: types.Message, state: FSMContext):
     if message.text == "/members":
         await state.clear()
@@ -58,7 +52,7 @@ async def get_members(message: types.Message, state: FSMContext):
 
 
 
-@offer_router.message(Command(commands="location"))
+@auth_router.message(Command(commands="location"))
 async def get_location(message: types.Message, state: FSMContext):
     await state.clear()
     media = []
