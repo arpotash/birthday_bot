@@ -7,7 +7,6 @@ from aiogram.fsm.context import FSMContext
 
 from router.offer import get_location
 
-from birthday_bot.router.offer import get_members_count
 
 auth_router = Router()
 
