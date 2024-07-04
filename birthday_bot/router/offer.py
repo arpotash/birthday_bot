@@ -6,21 +6,50 @@ from aiogram.fsm.context import FSMContext
 from db import cur, conn
 from aiogram.fsm.state import State, StatesGroup
 
+from router.register import register
+
 offer_router = Router()
 
 
 class CreateWish(StatesGroup):
     wish = State()
 
+class AdminAccount(StatesGroup):
+    password = State()
+
+
 
 
 @offer_router.message(Command(commands='members'))
-async def get_members(message: types.Message):
-    all_member_query = 'select first_name, last_name, will_be, comment from account'
-    cur.execute(all_member_query)
-    members = cur.fetchall()
-    formatted_members = "\n".join([f"{member[0]} {member[1]} {member[2]}" for member in members])
+async def get_members_count(message: types.Message, state: FSMContext):
+    count_member_query = 'select count(*) from account'
+    cur.execute(count_member_query)
+    members_count = cur.fetchall()
+    formatted_members = "Количество участников {} из 30".format(members_count[0][0])
     await message.answer(formatted_members)
+    await message.answer('Более подробная информация доступна организаторам, введите пароль:')
+    await state.set_state(AdminAccount.password)
+
+
+
+@offer_router.message(AdminAccount.password, F.text)
+async def get_members(message: types.Message, state: FSMContext):
+    if message.text == "/members":
+        await state.clear()
+        return await get_members_count(message, state)
+    if message.text == "/start":
+        await state.clear()
+        return await register(message, state)
+
+    if message.text == 'hiranuka':
+        all_member_query = 'select first_name, last_name, will_be, comment from account order by will_be'
+        cur.execute(all_member_query)
+        members = cur.fetchall()
+        formatted_members = "\n".join([f"{member[0]} {member[1]} {member[2]}" for member in members])
+        await message.answer(f'Полный список участников:\n{formatted_members}')
+    else:
+        await message.answer('Неверный пароль!')
+
 
 
 @offer_router.message(Command(commands="location"))
@@ -54,6 +83,8 @@ async def get_location(message: types.Message, state: FSMContext):
         "- 2 игровых зала с круглым столом для игры в мафию и профессиональными покерными столами.\n"
         "- 4 спальни и 3 санузла.\n\n"
         "🚗 **На закрытой территории**: большая парковочная зона."
+        "Адрес - Ленинградская обл., Всеволожский р-н, Юкковское сельское поселение, \n\n"
+        "СНТ Терра-Выборгское, Лазаревская ул., 20, Выборгское шоссе, 17 км\n\n"
     )
 
 # @offer_router.message(StateFilter(None), Command(commands="wishes"))

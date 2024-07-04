@@ -7,6 +7,8 @@ from aiogram.fsm.context import FSMContext
 
 from router.offer import get_location
 
+from birthday_bot.router.offer import get_members_count
+
 auth_router = Router()
 
 class RegisterAccount(StatesGroup):
@@ -24,7 +26,7 @@ async def register(message: types.Message, state: FSMContext):
         f'Поташов Артём, Малахов Павел, Романов Алексей.\n\n'
         f'Не буду лить много воды, все четко и по порядку.\n\n'
         f'Дата: 13-14 июля\n\n'
-        f'Ленинградская обл., Всеволожский р-н, Юкковское сельское поселение, \n\n'
+        f'Адрес - Ленинградская обл., Всеволожский р-н, Юкковское сельское поселение, \n\n'
         f'СНТ Терра-Выборгское, Лазаревская ул., 20, Выборгское шоссе, 17 км\n\n'
         f'Дресс-код: свободный стиль\n\n'
         f'Пожелания по подаркам: виш-листа в этот раз не будет, идеальный подарок - деньги :)\n\n'
@@ -41,6 +43,10 @@ async def add_first_name(message: types.Message, state: FSMContext):
         await state.clear()
         return await register(message, state)
 
+    if message.text == "/members":
+        await state.clear()
+        return await get_members_count(message, state)
+
     await state.update_data(first_name=message.text)
     await message.answer("Теперь фамилию")
     await state.set_state(RegisterAccount.last_name)
@@ -51,6 +57,10 @@ async def add_last_name(message: types.Message, state: FSMContext):
     if message.text == "/start":
         await state.clear()
         return await register(message, state)
+
+    if message.text == "/members":
+        await state.clear()
+        return await get_members_count(message, state)
 
     await state.update_data(last_name=message.text)
     options = ['Буду', 'Точно не знаю', 'Не смогу']
